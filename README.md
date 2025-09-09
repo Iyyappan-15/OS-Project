@@ -1,5 +1,5 @@
-name: "OS Scheduler Visualizer"
-description: >
+OS Scheduler Visualizer
+description: 
   An interactive web-based Operating System Scheduler Visualizer that simulates
   First Come First Serve (FCFS) and Shortest Job First (SJF) scheduling algorithms 
   with memory allocation and Gantt chart visualization.
@@ -14,8 +14,10 @@ features:
   - "⏯️ Controls: Start, Pause, Resume, Reset"
 
 project_structure:
-  - "index.html  # Main app (HTML, CSS, JS)"
-  - "README.md   # Documentation"
+  - "index.html"
+  - "style.css"
+  - "script.js"
+  - "README.md"   # Documentation
 
 how_to_run:
   steps:
