@@ -1,79 +1,291 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OS Scheduler Visualizer - FCFS & SJF</title>
+  <meta name="description" content="OS Scheduler Visualizer — Interactive simulation of CPU scheduling algorithms: FCFS, SJF, Round Robin, Priority, and SRTF with real-time Gantt chart and memory visualization." />
+  <title>OS Scheduler Visualizer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
-  <script src="script.js" defer></script>  
 </head>
 <body>
-  <!-- Theme Toggle Button -->
-  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
-    <span class="theme-icon sun">☀️</span>
-    <span class="theme-icon moon" style="position: absolute;">🌙</span>
+
+  <!-- Toast Container -->
+  <div id="toast-container" role="status" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- Theme Toggle -->
+  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode" aria-label="Toggle dark or light mode">
+    <span class="theme-icon" id="themeIcon">☀️</span>
   </button>
 
-  <h1>OS Scheduler Visualizer</h1>
-  <div class="container">
-    <div class="section">
-      <div class="row">
-        <div class="input-group">
-          <label for="pid">Process ID</label>
-          <input type="text" id="pid" value="P1" placeholder="Enter process ID">
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-content">
+      <div class="logo-group">
+        <div class="logo-icon" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="8" fill="url(#logoGrad)"/>
+            <rect x="6" y="10" width="6" height="12" rx="2" fill="white" opacity="0.9"/>
+            <rect x="14" y="6" width="6" height="16" rx="2" fill="white" opacity="0.7"/>
+            <rect x="22" y="13" width="6" height="9" rx="2" fill="white" opacity="0.5"/>
+            <defs>
+              <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32">
+                <stop stop-color="#3b82f6"/>
+                <stop offset="1" stop-color="#06b6d4"/>
+              </linearGradient>
+            </defs>
+          </svg>
         </div>
-        <div class="input-group">
-          <label for="burst" class="tooltip" data-tooltip="Time required for process execution">Burst Time</label>
-          <input type="number" id="burst" value="4" min="1" placeholder="Enter burst time">
-        </div>
-        <div class="input-group">
-          <label for="memReq" class="tooltip" data-tooltip="Memory units needed by process">Memory Required</label>
-          <input type="number" id="memReq" value="3" min="1" placeholder="Memory units">
-        </div>
-      </div>
-      
-      <div class="button-group">
-        <button onclick="addProcess()" class="secondary">+ Add Process</button>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="row">
-        <div class="input-group">
-          <label for="memSize" class="tooltip" data-tooltip="Total system memory available">Total Memory</label>
-          <input type="number" id="memSize" value="20" min="1" onchange="updateTotalMemory()">
-        </div>
-        <div class="input-group">
-          <label for="algorithm-select">Scheduling Algorithm</label>
-          <select id="algorithm-select">
-            <option value="fcfs">First Come First Serve (FCFS)</option>
-            <option value="sjf">Shortest Job First (SJF)</option>
-          </select>
+        <div>
+          <h1>OS Scheduler Visualizer</h1>
+          <p class="header-subtitle">CPU Scheduling Algorithm Simulator</p>
         </div>
       </div>
+      <div class="header-badges">
+        <span class="badge badge-blue">FCFS</span>
+        <span class="badge badge-cyan">SJF</span>
+        <span class="badge badge-purple">RR</span>
+        <span class="badge badge-amber">Priority</span>
+        <span class="badge badge-green">SRTF</span>
+      </div>
     </div>
+  </header>
 
-    <div class="button-group">
-      <button onclick="startSimulation()">▶ Start</button>
-      <button onclick="pauseSimulation()" class="outline">⏸ Pause</button>
-      <button onclick="resumeSimulation()" class="outline">▶ Resume</button>
-      <button onclick="resetSimulation()" class="outline">🔄 Reset</button>
-    </div>
+  <main class="main-content">
 
-    <div class="section">
-      <h3>Processes</h3>
-      <div id="processes"></div>
-    </div>
+    <!-- ─── CONFIGURATION PANEL ─── -->
+    <section class="panel" aria-labelledby="configHeading">
+      <div class="panel-header">
+        <h2 id="configHeading" class="panel-title">
+          <span class="panel-icon" aria-hidden="true">⚙️</span>
+          Configuration
+        </h2>
+      </div>
+      <div class="panel-body">
 
-    <div class="section">
-      <h3>Memory Allocation</h3>
-      <div id="memory-visual"></div>
-    </div>
+        <!-- Algorithm & Memory Row -->
+        <div class="config-row">
+          <div class="input-group">
+            <label for="algorithm-select">Scheduling Algorithm</label>
+            <select id="algorithm-select" onchange="onAlgoChange()" aria-label="Select scheduling algorithm">
+              <option value="fcfs">First Come First Serve (FCFS)</option>
+              <option value="sjf">Shortest Job First (SJF)</option>
+              <option value="rr">Round Robin (RR)</option>
+              <option value="priority">Priority Scheduling</option>
+              <option value="srtf">Shortest Remaining Time First (SRTF)</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="memSize" class="tooltip-label" data-tooltip="Total number of memory units available in the system">
+              Total Memory <span class="info-icon">ⓘ</span>
+            </label>
+            <input type="number" id="memSize" value="20" min="1" max="200" onchange="updateTotalMemory()" aria-label="Total memory units" />
+          </div>
+          <div class="input-group" id="quantum-group" style="display:none;">
+            <label for="timeQuantum" class="tooltip-label" data-tooltip="Time units each process runs before being preempted in Round Robin">
+              Time Quantum <span class="info-icon">ⓘ</span>
+            </label>
+            <input type="number" id="timeQuantum" value="2" min="1" aria-label="Time quantum for Round Robin" />
+          </div>
+        </div>
 
-    <div class="section">
-      <h3>Gantt Chart</h3>
-      <div id="gantt-chart"></div>
-    </div>
-  </div>
+        <!-- Add Process Row -->
+        <div class="add-process-card">
+          <div class="add-process-title">
+            <span class="panel-icon" aria-hidden="true">➕</span>
+            Add New Process
+          </div>
+          <div class="process-inputs-grid">
+            <div class="input-group">
+              <label for="pid">Process ID</label>
+              <input type="text" id="pid" value="P1" placeholder="e.g. P1" maxlength="8" aria-label="Process ID" />
+            </div>
+            <div class="input-group">
+              <label for="arrival" class="tooltip-label" data-tooltip="Time unit when this process arrives in the ready queue">
+                Arrival Time <span class="info-icon">ⓘ</span>
+              </label>
+              <input type="number" id="arrival" value="0" min="0" aria-label="Arrival time" />
+            </div>
+            <div class="input-group">
+              <label for="burst" class="tooltip-label" data-tooltip="Total CPU time required to complete the process">
+                Burst Time <span class="info-icon">ⓘ</span>
+              </label>
+              <input type="number" id="burst" value="4" min="1" aria-label="Burst time" />
+            </div>
+            <div class="input-group" id="priority-input-group" style="display:none;">
+              <label for="priorityVal" class="tooltip-label" data-tooltip="Lower number = higher priority">
+                Priority <span class="info-icon">ⓘ</span>
+              </label>
+              <input type="number" id="priorityVal" value="1" min="1" aria-label="Process priority" />
+            </div>
+            <div class="input-group">
+              <label for="memReq" class="tooltip-label" data-tooltip="Number of memory units this process requires">
+                Memory <span class="info-icon">ⓘ</span>
+              </label>
+              <input type="number" id="memReq" value="3" min="1" aria-label="Memory required" />
+            </div>
+          </div>
+          <div class="add-btn-row">
+            <button class="btn btn-primary" onclick="addProcess()" aria-label="Add process to queue">
+              <span>＋</span> Add Process
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─── SIMULATION CONTROLS ─── -->
+    <section class="panel controls-panel" aria-labelledby="controlsHeading">
+      <div class="panel-header">
+        <h2 id="controlsHeading" class="panel-title">
+          <span class="panel-icon" aria-hidden="true">🎮</span>
+          Simulation Controls
+        </h2>
+        <div class="speed-control">
+          <label for="speedSlider" class="speed-label">Speed: <span id="speedDisplay" class="mono">1×</span></label>
+          <input type="range" id="speedSlider" min="1" max="8" value="2" step="1" oninput="updateSpeed(this.value)" aria-label="Simulation speed" class="speed-slider" />
+          <span class="speed-hint">0.5×</span>
+          <span class="speed-hint">4×</span>
+        </div>
+      </div>
+      <div class="panel-body controls-body">
+        <div class="sim-buttons">
+          <button class="btn btn-success" id="startBtn" onclick="startSimulation()" aria-label="Start simulation">
+            <span>▶</span> Start
+          </button>
+          <button class="btn btn-outline" id="pauseBtn" onclick="pauseSimulation()" disabled aria-label="Pause simulation">
+            <span>⏸</span> Pause
+          </button>
+          <button class="btn btn-outline" id="resumeBtn" onclick="resumeSimulation()" disabled aria-label="Resume simulation">
+            <span>▶</span> Resume
+          </button>
+          <button class="btn btn-danger-outline" id="resetBtn" onclick="resetSimulation()" aria-label="Reset simulation">
+            <span>🔄</span> Reset
+          </button>
+        </div>
+        <div class="sim-status" id="simStatus">
+          <span class="status-dot idle"></span>
+          <span id="statusText">Idle — Add processes to begin</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── PROCESS QUEUE ─── -->
+    <section class="panel" aria-labelledby="processesHeading">
+      <div class="panel-header">
+        <h2 id="processesHeading" class="panel-title">
+          <span class="panel-icon" aria-hidden="true">📋</span>
+          Process Queue
+        </h2>
+        <div class="panel-header-actions">
+          <span id="processCount" class="count-badge">0 processes</span>
+          <button class="btn btn-ghost btn-sm" onclick="clearAllProcesses()" aria-label="Remove all processes">Clear All</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div id="processes-empty" class="empty-state">
+          <div class="empty-icon" aria-hidden="true">📭</div>
+          <p>No processes added yet.<br/>Use the form above to add processes.</p>
+        </div>
+        <div id="processes" role="list" aria-label="Process queue"></div>
+      </div>
+    </section>
+
+    <!-- ─── MEMORY VISUALIZATION ─── -->
+    <section class="panel" aria-labelledby="memoryHeading">
+      <div class="panel-header">
+        <h2 id="memoryHeading" class="panel-title">
+          <span class="panel-icon" aria-hidden="true">💾</span>
+          Memory Allocation
+        </h2>
+        <div class="memory-meta">
+          <span id="memUsed" class="mono">0</span>/<span id="memTotal" class="mono">20</span> units
+          &nbsp;|&nbsp;
+          <span id="memPercent" class="mono">0%</span> used
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="memory-bar-wrapper">
+          <div id="memory-visual" class="memory-visual" role="img" aria-label="Memory allocation visualization"></div>
+        </div>
+        <div class="memory-legend">
+          <div class="legend-item">
+            <div class="legend-swatch free"></div>
+            <span>Free</span>
+          </div>
+          <div id="memory-legend-processes"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── GANTT CHART ─── -->
+    <section class="panel" aria-labelledby="ganttHeading">
+      <div class="panel-header">
+        <h2 id="ganttHeading" class="panel-title">
+          <span class="panel-icon" aria-hidden="true">📊</span>
+          Gantt Chart
+        </h2>
+        <div class="panel-header-actions" id="exportBtns" style="display:none;">
+          <button class="btn btn-ghost btn-sm" onclick="exportCSV()" aria-label="Export statistics as CSV">
+            📄 Export CSV
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="exportPNG()" aria-label="Export Gantt chart as PNG">
+            🖼️ Export PNG
+          </button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div id="gantt-empty" class="empty-state">
+          <div class="empty-icon" aria-hidden="true">📉</div>
+          <p>Gantt chart will appear here once the simulation runs.</p>
+        </div>
+        <div id="gantt-wrapper" style="display:none;">
+          <div id="gantt-scroll">
+            <div id="gantt-chart" role="img" aria-label="Gantt chart visualization"></div>
+            <div id="gantt-axis" class="gantt-axis"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── STATISTICS PANEL ─── -->
+    <section class="panel" id="stats-section" style="display:none;" aria-labelledby="statsHeading">
+      <div class="panel-header">
+        <h2 id="statsHeading" class="panel-title">
+          <span class="panel-icon" aria-hidden="true">📈</span>
+          Simulation Statistics
+        </h2>
+      </div>
+      <div class="panel-body">
+        <div class="stats-summary" id="stats-summary"></div>
+        <div class="stats-table-wrapper">
+          <table class="stats-table" id="stats-table" aria-label="Per-process statistics">
+            <thead>
+              <tr>
+                <th>Process</th>
+                <th>Arrival</th>
+                <th>Burst</th>
+                <th>Completion</th>
+                <th>Turnaround</th>
+                <th>Waiting</th>
+                <th>Response</th>
+              </tr>
+            </thead>
+            <tbody id="stats-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>Built for learning Operating System concepts · <a href="https://github.com/Iyyappan-15/OS-Project" target="_blank" rel="noopener">View on GitHub</a></p>
+  </footer>
+
+  <script src="script.js" defer></script>
 </body>
 </html>
