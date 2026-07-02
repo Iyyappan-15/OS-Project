@@ -1,0 +1,610 @@
+================================================================================
+                    OS SCHEDULER VISUALIZER — PROJECT DOCUMENTATION
+                        Complete Guide for HR / Interview Preparation
+================================================================================
+
+GitHub Repository : https://github.com/Iyyappan-15/OS-Project
+Technology Stack  : HTML5 | CSS3 | Vanilla JavaScript
+Project Type      : Web-Based Interactive Simulation Tool
+Domain            : Operating Systems / Computer Science Education
+
+
+================================================================================
+  1. PROJECT OVERVIEW
+================================================================================
+
+The OS Scheduler Visualizer is an interactive, browser-based simulation tool
+that visually demonstrates how a computer's operating system manages and
+schedules multiple processes for CPU execution. It brings theoretical OS
+concepts to life by showing — in real time — exactly how each algorithm
+decides which process runs next, how memory is allocated, and how long each
+process waits before getting CPU time.
+
+The project requires zero installation. It runs entirely in a web browser
+(Chrome, Edge, Firefox) by simply opening the index.html file. There is no
+backend server, no database, and no framework dependency — everything is
+built using pure HTML, CSS, and JavaScript.
+
+
+================================================================================
+  2. PROBLEM STATEMENT
+================================================================================
+
+Operating System scheduling is one of the most fundamental and critical
+concepts in Computer Science. However, it is also one of the hardest topics
+for students to truly understand because:
+
+  (a) Textbook diagrams are static — they cannot show the dynamic, tick-by-tick
+      behaviour of a scheduling algorithm in action.
+
+  (b) Students cannot experiment — you cannot change arrival times or burst
+      times and immediately see the impact on waiting time or turnaround time.
+
+  (c) There is no instant feedback — students have to manually calculate
+      Gantt charts and statistics on paper, which is slow and error-prone.
+
+  (d) Multiple algorithms are taught in isolation — students rarely see a
+      direct side-by-side comparison of how FCFS, SJF, and Round Robin
+      behave differently on the same set of processes.
+
+PROBLEM IN ONE LINE:
+  "There is no easy-to-use, visual tool that lets students experiment with
+   CPU scheduling algorithms and instantly see the results — without writing
+   any code or doing manual calculations."
+
+SOLUTION:
+  Build a fully interactive web-based visualizer where a student can add
+  processes, choose any scheduling algorithm, press Start, and watch the
+  entire simulation play out in real time — including the Gantt chart,
+  memory allocation, and a complete statistics table.
+
+
+================================================================================
+  3. OBJECTIVE OF THE PROJECT
+================================================================================
+
+  • To simulate five major CPU scheduling algorithms in an animated,
+    step-by-step visual manner.
+
+  • To show the impact of different algorithms on key performance metrics:
+    Waiting Time, Turnaround Time, Response Time, and CPU Utilization.
+
+  • To visualize memory allocation alongside CPU scheduling, showing how
+    processes occupy and release memory blocks during execution.
+
+  • To provide a learning tool that is self-explanatory and requires no
+    prior setup — just open and use.
+
+  • To allow students and educators to export simulation results (PNG/CSV)
+    for reports, assignments, and presentations.
+
+
+================================================================================
+  4. SCHEDULING ALGORITHMS IMPLEMENTED
+================================================================================
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │ 1. FCFS — First Come First Serve                                        │
+  │    The simplest scheduling algorithm. Processes are executed in the     │
+  │    exact order they arrive. The first process to arrive is the first    │
+  │    one to run. Non-preemptive (cannot be interrupted once started).     │
+  │    Problem: Can cause the "Convoy Effect" where short processes wait    │
+  │    behind one very long process.                                        │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │ 2. SJF — Shortest Job First                                             │
+  │    Among all available (arrived) processes, the one with the smallest  │
+  │    burst time is executed first. Non-preemptive. Reduces average        │
+  │    waiting time compared to FCFS. However, it can cause "Starvation"   │
+  │    — a long process may never get CPU time if short ones keep arriving. │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │ 3. Round Robin (RR)                                                     │
+  │    Each process gets a fixed slice of CPU time called a "Time Quantum". │
+  │    After its quantum expires, the process goes to the back of the queue │
+  │    and the next one runs. Preemptive. Fair to all processes. Widely     │
+  │    used in real operating systems (Linux, Windows). The key parameter   │
+  │    is the Time Quantum — too small causes high overhead, too large      │
+  │    becomes similar to FCFS.                                             │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │ 4. Priority Scheduling (Non-Preemptive)                                 │
+  │    Each process is assigned a priority number. The process with the     │
+  │    highest priority (lowest number in our system) runs first.           │
+  │    Non-preemptive. Real-world use: OS gives system processes higher     │
+  │    priority than user processes. Risk: Low-priority processes may       │
+  │    starve. Solution: Aging (priority increases over time) — noted as    │
+  │    a future enhancement.                                                │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │ 5. SRTF — Shortest Remaining Time First                                 │
+  │    Preemptive version of SJF. At every CPU clock tick, the scheduler   │
+  │    checks if any newly arrived process has a shorter remaining time     │
+  │    than the currently running process. If yes, the current process is  │
+  │    preempted (paused) and the shorter one starts. Context switches are  │
+  │    visible in the Gantt chart. Gives the minimum average waiting time   │
+  │    among all non-preemptive algorithms — but at the cost of high        │
+  │    context-switch overhead.                                             │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+
+================================================================================
+  5. KEY FEATURES OF THE PROJECT
+================================================================================
+
+  ► 5 Scheduling Algorithms in one tool (FCFS, SJF, RR, Priority, SRTF)
+  ► Arrival Time Support — processes can arrive at different times;
+    CPU idle gaps are automatically shown in the Gantt chart
+  ► Real-Time Gantt Chart — animated blocks build as simulation runs,
+    with a time axis (t0, t1, t2...) at the bottom
+  ► Memory Allocation Visualizer — shows contiguous memory allocation
+    with live usage percentage (e.g., "9/20 units | 45% used")
+  ► Statistics Panel — auto-calculated after simulation:
+      - Completion Time per process
+      - Turnaround Time (CT - Arrival)
+      - Waiting Time (TAT - Burst)
+      - Response Time (First CPU time - Arrival)
+      - Average Waiting Time, Average Turnaround Time
+      - CPU Utilization %
+  ► Custom Toast Notifications — no browser alert() popups;
+    beautiful slide-in notifications for every action
+  ► Process Management — add, delete individual processes or clear all
+  ► Speed Control Slider — simulate at 0.5× to 8× speed
+  ► Pause / Resume — halt the simulation mid-run and resume anytime
+  ► Export as PNG — save the Gantt chart as an image
+  ► Export as CSV — download the statistics table as a spreadsheet
+  ► Dark / Light Theme Toggle — persists across browser sessions
+  ► Fully Responsive — works on desktop, tablet, and mobile
+  ► No Installation — just open index.html in any modern browser
+
+
+================================================================================
+  6. TECHNOLOGIES USED
+================================================================================
+
+  ┌──────────────────┬───────────────────────────────────────────────────────┐
+  │ Technology       │ Purpose                                               │
+  ├──────────────────┼───────────────────────────────────────────────────────┤
+  │ HTML5            │ Semantic page structure — header, main, section,      │
+  │                  │ article elements for accessibility and SEO.           │
+  │                  │ ARIA labels for screen reader support.                │
+  ├──────────────────┼───────────────────────────────────────────────────────┤
+  │ CSS3             │ "Slate Forge" dark-first design system using CSS      │
+  │                  │ Custom Properties (variables). Glassmorphism,         │
+  │                  │ smooth transitions, dot-grid background,              │
+  │                  │ responsive grid layouts, micro-animations.            │
+  ├──────────────────┼───────────────────────────────────────────────────────┤
+  │ Vanilla          │ All simulation logic — scheduling algorithms,         │
+  │ JavaScript       │ memory management, Gantt chart rendering,             │
+  │ (ES6+)           │ statistics computation, timer management using        │
+  │                  │ recursive setTimeout pattern, DOM manipulation,       │
+  │                  │ LocalStorage for theme persistence.                   │
+  ├──────────────────┼───────────────────────────────────────────────────────┤
+  │ Google Fonts     │ Space Grotesk (headings), Inter (body text),         │
+  │                  │ JetBrains Mono (process IDs and numeric values).     │
+  ├──────────────────┼───────────────────────────────────────────────────────┤
+  │ html2canvas      │ Loaded on-demand from CDN only when PNG export is    │
+  │ (CDN, optional)  │ clicked. Captures the Gantt chart as an image.       │
+  ├──────────────────┼───────────────────────────────────────────────────────┤
+  │ Git & GitHub     │ Version control and public repository hosting.        │
+  └──────────────────┴───────────────────────────────────────────────────────┘
+
+  WHY NO FRAMEWORK?
+  The project is intentionally built without React, Angular, or Vue because:
+    (a) It demonstrates deep understanding of core web technologies.
+    (b) It keeps the project lightweight — loads instantly with zero build step.
+    (c) It shows the ability to manage complex state (simulation timer,
+        process queues, memory arrays) without framework abstractions.
+
+
+================================================================================
+  7. SYSTEM ARCHITECTURE & HOW IT WORKS
+================================================================================
+
+  The project follows a simple but well-structured architecture:
+
+  index.html  ──► Defines the UI layout, all input fields, sections,
+                  and semantic HTML structure.
+
+  style.css   ──► CSS design system with 30+ custom properties (variables)
+                  for colors, shadows, radii, fonts. Handles dark/light
+                  themes via [data-theme] attribute switching.
+
+  script.js   ──► The brain of the project. Contains:
+                    • State management (processes array, memory array,
+                      simulation timer handle, flags)
+                    • 5 scheduling algorithm implementations
+                    • Memory allocation (contiguous first-fit algorithm)
+                    • Gantt chart DOM builder with time axis
+                    • Statistics calculator
+                    • Toast notification system
+                    • Export functions (CSV and PNG)
+                    • Theme manager
+
+  HOW THE SIMULATION LOOP WORKS:
+  The simulation uses a pure recursive setTimeout pattern (not setInterval).
+  This means each "clock tick" schedules the next tick only after it completes.
+  This approach is critical because:
+    - It allows pausing by simply not scheduling the next tick
+    - It allows speed changes to take effect immediately
+    - It avoids the common bug of setInterval drift
+    - It handles idle gaps (when no process has arrived) by inserting IDLE
+      blocks into the Gantt chart and advancing the clock
+
+  MEMORY ALLOCATION:
+  Uses the "First-Fit Contiguous Allocation" algorithm — it scans the memory
+  array from the beginning and finds the first contiguous free block that is
+  large enough for the process. Memory is freed when a process finishes.
+
+
+================================================================================
+  8. PERFORMANCE METRICS EXPLAINED
+================================================================================
+
+  These are the metrics calculated and shown in the Statistics Panel:
+
+  • Arrival Time    : The time unit at which the process enters the
+                      ready queue and is available for scheduling.
+
+  • Burst Time      : The total amount of CPU time the process needs
+                      to complete its execution.
+
+  • Completion Time : The clock time when the process finishes execution.
+
+  • Turnaround Time : Total time spent by the process in the system.
+                      Formula: Turnaround Time = Completion Time - Arrival Time
+                      Example: Arrived at t=2, finished at t=10 → TAT = 8
+
+  • Waiting Time    : Time the process spent waiting in the ready queue
+                      (not running, not doing useful work).
+                      Formula: Waiting Time = Turnaround Time - Burst Time
+                      Example: TAT=8, Burst=5 → WT = 3
+
+  • Response Time   : Time from arrival until the process gets CPU for
+                      the first time. Important for interactive systems.
+                      Formula: Response Time = First CPU Time - Arrival Time
+
+  • CPU Utilization : Percentage of time the CPU was actually doing useful
+                      work (not idle).
+                      Formula: (Sum of all Burst Times / Total Time Span) × 100
+
+
+================================================================================
+  9. CHALLENGES FACED & HOW WE SOLVED THEM
+================================================================================
+
+  CHALLENGE 1: Simulation loop stopping when arrival times > 0
+  ─────────────────────────────────────────────────────────────
+  Problem: When all processes had non-zero arrival times, the simulation
+  would fire one IDLE tick and then permanently stop — all processes
+  stayed in WAITING state forever.
+
+  Root Cause: In the idle-tick code path, there was a bare `return` statement
+  without scheduling the next tick. The JavaScript event loop had nothing
+  to execute, so the simulation silently died.
+
+  Fix: Replaced the bare `return` with `simTimer = setTimeout(tick, speedMs)`
+  in every code path — ensuring the simulation loop always schedules its
+  next step before exiting the current function.
+
+  CHALLENGE 2: setInterval vs setTimeout ID conflicts
+  ────────────────────────────────────────────────────
+  Problem: The original code mixed setInterval() and setTimeout() IDs in
+  the same variable (simInterval). clearInterval() was called on a setTimeout
+  ID — unreliable behaviour across browsers.
+
+  Fix: Completely eliminated setInterval from the codebase. Rewrote the
+  entire simulation engine using only recursive setTimeout calls. A single
+  `simTimer` variable always holds the current pending timeout handle.
+
+  CHALLENGE 3: Simulation appearing to stop between processes
+  ────────────────────────────────────────────────────────────
+  Problem: After one process finished, the code called setTimeout(tick, 300)
+  but didn't store the handle. Between processes, the simInterval variable
+  was null, making the app think nothing was running — allowing double-starts.
+
+  Fix: Introduced an `isRunning` boolean flag separate from the timer handle.
+  The timer handle is always stored in `simTimer`. Both are checked together.
+
+  CHALLENGE 4: SRTF context switch Gantt chart accuracy
+  ──────────────────────────────────────────────────────
+  Problem: In SRTF, a process can be preempted mid-execution. The Gantt
+  chart needed to correctly split one process into multiple blocks whenever
+  a context switch occurred.
+
+  Fix: Track `startClk` (when the current process segment began) and
+  `currentP` (which process is running). On every tick, compare the
+  "best process to run" against `currentP`. If different, close the current
+  Gantt block and open a new one for the new process.
+
+  CHALLENGE 5: Memory leak from consecutive IDLE Gantt blocks
+  ────────────────────────────────────────────────────────────
+  Problem: When the CPU was idle for multiple ticks, each tick added a
+  separate DOM element. A long idle period could create hundreds of elements.
+
+  Fix: Implemented IDLE block merging — if the last Gantt block is already
+  an IDLE block and its end time equals the new block's start time, we
+  simply extend the existing block's width instead of creating a new element.
+
+
+================================================================================
+  10. PROS / ADVANTAGES OF THIS PROJECT
+================================================================================
+
+  ✓ EDUCATIONAL VALUE
+    Turns abstract textbook concepts into living, animated simulations.
+    Students can see exactly what the OS does at every clock tick.
+
+  ✓ ZERO SETUP / ZERO DEPENDENCY
+    No Node.js, no npm install, no build process. Open in browser and use.
+    Works offline after the first page load (except PNG export).
+
+  ✓ COVERS ALL MAJOR ALGORITHMS
+    One tool covers FCFS, SJF, Round Robin, Priority, and SRTF — everything
+    taught in a standard Operating Systems course.
+
+  ✓ REAL-TIME VISUAL FEEDBACK
+    Users see the Gantt chart build block-by-block, memory allocate and free
+    in real time, and process states change from WAITING → RUNNING → FINISHED.
+
+  ✓ ACCURATE STATISTICS
+    All five performance metrics (CT, TAT, WT, RT, CPU Utilization) are
+    calculated automatically and displayed in a well-formatted table.
+
+  ✓ PROFESSIONAL UI / UX
+    "Slate Forge" dark-first design with smooth animations, toast notifications,
+    responsive layout, and accessibility support (ARIA labels, semantic HTML).
+
+  ✓ EXPORTABLE RESULTS
+    Students can export the Gantt chart as a PNG image and the statistics
+    table as a CSV file — useful for assignments and reports.
+
+  ✓ SPEED CONTROL
+    Simulation can run at 0.5× (slow, for detailed observation) or up to
+    8× (fast, for quick results with many processes).
+
+  ✓ ARRIVAL TIME SUPPORT
+    Unlike many simple schedulers, this tool fully supports different arrival
+    times and shows CPU idle gaps in the Gantt chart.
+
+  ✓ CLEAN, READABLE CODE
+    Follows 'use strict' mode, clear function separation, meaningful variable
+    names, and consistent code style — easy to read, extend, and maintain.
+
+
+================================================================================
+  11. YOUR ROLE IN THIS PROJECT
+================================================================================
+
+  This project was independently designed, developed, and debugged end-to-end.
+
+  ► CONCEPT & PLANNING
+    Identified the gap in available OS learning tools. Defined the problem
+    statement, chose the algorithms to implement, and designed the feature set.
+
+  ► UI/UX DESIGN
+    Designed the "Slate Forge" visual theme from scratch — including the color
+    palette (deep charcoal background, blue/cyan accents), typography choices
+    (Space Grotesk, Inter, JetBrains Mono), component layout, and the
+    responsive grid system using CSS Custom Properties.
+
+  ► ALGORITHM IMPLEMENTATION
+    Implemented all five scheduling algorithms (FCFS, SJF, Round Robin,
+    Priority, SRTF) in pure JavaScript, including:
+      - Correct handling of arrival times and CPU idle periods
+      - Preemption logic for SRTF (preempt on every clock tick)
+      - Round Robin queue management with time quantum
+      - Priority ordering with arrival time as tie-breaker
+
+  ► SIMULATION ENGINE
+    Designed and built the core simulation loop using a recursive setTimeout
+    architecture — a deliberate decision to avoid setInterval drift, support
+    real-time speed control, and enable clean pause/resume behaviour.
+
+  ► MEMORY MANAGEMENT
+    Implemented the contiguous first-fit memory allocation algorithm —
+    allocating and freeing memory as processes start and finish, with a
+    real-time visual representation.
+
+  ► STATISTICS ENGINE
+    Built the statistics computation module that calculates CT, TAT, WT, RT,
+    and CPU Utilization for every process and displays averages.
+
+  ► DEBUGGING
+    Identified and fixed critical bugs in the simulation loop:
+      - The IDLE tick silent exit bug (processes stuck in WAITING state)
+      - The setInterval/setTimeout ID conflict bug
+      - The between-process timer tracking gap bug
+      - The SRTF Gantt chart context-switch accuracy bug
+
+  ► FEATURES & POLISH
+    Built the toast notification system, speed control slider, dark/light
+    theme toggle with localStorage persistence, export (PNG/CSV), process
+    delete functionality, and the Gantt chart time axis.
+
+  ► VERSION CONTROL
+    Managed the project using Git and published it to GitHub.
+
+
+================================================================================
+  12. POSSIBLE HR / INTERVIEW QUESTIONS & ANSWERS
+================================================================================
+
+  Q1: What is the purpose of this project?
+  ─────────────────────────────────────────
+  A: The purpose is to make CPU scheduling algorithms — a core Operating
+     Systems concept — visually understandable. Instead of reading static
+     diagrams, users can interactively add processes, pick any scheduling
+     algorithm, and watch a real-time animated simulation of how the OS
+     would handle those processes. It also calculates all performance
+     metrics automatically.
+
+  Q2: What is CPU scheduling and why is it important?
+  ─────────────────────────────────────────────────────
+  A: CPU scheduling is the method by which an operating system decides
+     which process in the ready queue gets to use the CPU next. It is
+     critical because the CPU can only run one process at a time (on a
+     single core). Good scheduling maximizes CPU utilization, minimizes
+     waiting time, and ensures fair resource distribution among all
+     processes.
+
+  Q3: What is the difference between FCFS and SJF?
+  ──────────────────────────────────────────────────
+  A: FCFS (First Come First Serve) runs processes in the order they arrive,
+     regardless of how long they take. SJF (Shortest Job First) runs the
+     process with the smallest burst time first. SJF gives a lower average
+     waiting time than FCFS, but it can cause "starvation" — a long process
+     may wait indefinitely if short processes keep arriving.
+
+  Q4: What is preemption? Which algorithms are preemptive here?
+  ─────────────────────────────────────────────────────────────
+  A: Preemption means the CPU can be taken away from a running process
+     before it finishes — given to another higher-priority or shorter
+     process. In this project:
+       - Non-preemptive: FCFS, SJF, Priority (once started, runs to finish)
+       - Preemptive: Round Robin (time quantum based), SRTF (shortest
+         remaining time at every clock tick)
+
+  Q5: Why did you choose Vanilla JavaScript instead of React?
+  ───────────────────────────────────────────────────────────
+  A: Three reasons. First, it demonstrates a deep understanding of
+     fundamental web technologies without relying on framework magic.
+     Second, the project stays lightweight — there is zero build step,
+     zero npm install, and it opens in any browser instantly. Third,
+     managing complex simulation state (timers, queues, memory arrays)
+     from scratch proves stronger programming fundamentals than doing
+     the same with a framework's state management tools.
+
+  Q6: What was the hardest bug you fixed in this project?
+  ────────────────────────────────────────────────────────
+  A: The most critical bug was the IDLE tick silent exit. When all processes
+     had a non-zero arrival time, the simulation would fire one idle clock
+     tick and then silently stop — all processes stayed in WAITING state
+     forever with no error message. The root cause was a bare `return`
+     statement in the idle handling code that did not schedule the next
+     tick. The JavaScript event loop had nothing left to execute, so the
+     simulation died without any visible error. The fix was to ensure every
+     code path — including idle handling and pause states — always schedules
+     the next setTimeout call before returning.
+
+  Q7: What is a Gantt chart in the context of scheduling?
+  ─────────────────────────────────────────────────────────
+  A: A Gantt chart is a horizontal bar chart that shows which process the
+     CPU was executing at each unit of time. The X-axis represents time
+     (t0, t1, t2...) and each bar shows the process that occupied the CPU
+     during that interval. It makes context switches, idle periods, and
+     execution order visually clear.
+
+  Q8: What is Turnaround Time and Waiting Time?
+  ───────────────────────────────────────────────
+  A: Turnaround Time is the total time a process spends in the system from
+     arrival to completion. Formula: CT - Arrival Time. Waiting Time is the
+     portion of that time the process spent NOT running — just waiting in
+     the queue. Formula: Turnaround Time - Burst Time. These two metrics
+     are the primary way to compare how good a scheduling algorithm is.
+
+  Q9: What is Round Robin and when is it used in real operating systems?
+  ───────────────────────────────────────────────────────────────────────
+  A: Round Robin gives each process a fixed time slice (called the Time
+     Quantum). After the quantum expires, the process goes to the end of
+     the queue and the next process runs. It is used in Linux (CFS is
+     based on RR concepts) and Windows for time-sharing systems because
+     it ensures no single process monopolizes the CPU — every process
+     gets regular turns, which is essential for interactive/GUI applications.
+
+  Q10: What are the limitations of this project?
+  ────────────────────────────────────────────────
+  A: Honest limitations include:
+     (a) Only single-core CPU simulation — no multi-core scheduling.
+     (b) Priority scheduling does not implement aging (a technique to
+         prevent starvation by gradually increasing a waiting process's
+         priority over time).
+     (c) Memory allocation uses only contiguous first-fit — real OS memory
+         managers use paging or segmentation.
+     (d) All processes are CPU-bound — no I/O burst simulation.
+     These are noted as future enhancements.
+
+  Q11: What would you add if you had more time?
+  ───────────────────────────────────────────────
+  A: (a) Multi-level Feedback Queue (MLFQ) — the algorithm used by most
+         modern real operating systems.
+     (b) Priority Aging — to prevent starvation in priority scheduling.
+     (c) I/O Burst simulation — processes that alternate between CPU and I/O.
+     (d) Side-by-side algorithm comparison — run the same process set
+         through all algorithms and compare their Gantt charts and stats.
+     (e) Dark mode Gantt chart PNG export with proper background.
+
+  Q12: How does the memory allocation work in your project?
+  ──────────────────────────────────────────────────────────
+  A: It uses the Contiguous First-Fit allocation strategy. Memory is
+     represented as an array of slots. When a process needs memory, the
+     algorithm scans from the beginning of the array and finds the first
+     contiguous block of free slots large enough for the process. When
+     the process finishes, all its slots are freed. This is visualised
+     as a horizontal bar showing allocated (colored) and free (grey) zones.
+
+  Q13: How do you handle multiple processes arriving at the same time?
+  ─────────────────────────────────────────────────────────────────────
+  A: When multiple processes arrive at the same time, the tie is broken
+     by the algorithm's own rule:
+       - FCFS: Order in which they were added to the queue
+       - SJF: Shortest burst time first; if equal, earlier arrival
+       - Round Robin: Queue position (earlier added goes first)
+       - Priority: Lower priority number (higher priority) goes first
+       - SRTF: Shortest remaining time first; if equal, earlier arrival
+
+
+================================================================================
+  13. PROJECT STATISTICS
+================================================================================
+
+  Files          : 4 (index.html, style.css, script.js, README.md)
+  Total Lines    : ~1,400+ lines of original code
+  Algorithms     : 5 (FCFS, SJF, Round Robin, Priority, SRTF)
+  Features       : 15+ (see Section 5)
+  Bugs Fixed     : 5 major simulation logic bugs
+  Platforms      : Browser-based (Chrome, Edge, Firefox, Safari)
+  Dependencies   : 0 npm packages | 1 optional CDN (html2canvas for PNG export)
+  Repository     : https://github.com/Iyyappan-15/OS-Project
+
+
+================================================================================
+  14. HOW TO RUN / DEMO THE PROJECT
+================================================================================
+
+  OPTION 1 — Direct Open (Simplest):
+    • Download or clone the repository
+    • Open index.html in Chrome or Edge
+    • No internet needed (except for Google Fonts and PNG export)
+
+  OPTION 2 — Python Local Server:
+    • Open terminal in project folder
+    • Run: python -m http.server 8080
+    • Open: http://localhost:8080
+
+  OPTION 3 — VS Code Live Server:
+    • Open project in VS Code
+    • Install "Live Server" extension
+    • Right-click index.html → Open with Live Server
+
+  DEMO STEPS (to show during interview):
+    1. Select "Round Robin" from algorithm dropdown
+    2. Set Time Quantum to 2
+    3. Add P1: Arrival=0, Burst=5, Memory=3
+    4. Add P2: Arrival=2, Burst=3, Memory=4
+    5. Add P3: Arrival=4, Burst=4, Memory=5
+    6. Set speed to 2× or 3×
+    7. Click Start — watch the Gantt chart build in real time
+    8. After completion, show the Statistics table
+    9. Click "Export CSV" to show the download feature
+    10. Toggle dark/light theme to show the theme system
+
+
+================================================================================
+  END OF DOCUMENT
+  OS Scheduler Visualizer | GitHub: https://github.com/Iyyappan-15/OS-Project
+================================================================================
